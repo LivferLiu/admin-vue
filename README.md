@@ -2,7 +2,6 @@
 
 English | [简体中文](./README-zh.md)
 
-> A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
 > 基于vue-admin-template 开发
 
 **Live demo:** http://panjiachen.github.io/vue-admin-template
