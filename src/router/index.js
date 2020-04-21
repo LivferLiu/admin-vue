@@ -158,14 +158,44 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: "/developRouter",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "create",
+        name: "RouterCreate",
+        component: () => import("@/views/developManage/children/create")
+      },
+      {
+        path: "edit/:id",
+        name: "RouterEdit",
+        component: () => import("@/views/developManage/children/edit"),
+        props: true
+      }
+    ]
+  }
+];
 
+/**
+ * 需要校验角色权限的路由
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404", hidden: true }
 ];
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
+
+  // router滚动行为
+  // 这个功能只在支持 history.pushState 的浏览器中可用
   scrollBehavior: () => ({ y: 0 }),
+
+  // 不需要校验权限的路由列表
   routes: constantRoutes
 });
 
@@ -174,6 +204,10 @@ const router = createRouter();
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter();
+
+  // matcher对象对外提供 match() 和 addRoutes()两个方法。
+  // addRoutes() 作用是动态添加路由配置
+  // match() 根据传入的rawLocation类型的raw 和当前的路径 currentRoute 计算出一个新的路径并返回
   router.matcher = newRouter.matcher; // reset router
 }
 

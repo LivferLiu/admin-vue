@@ -6,7 +6,8 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: "",
-    avatar: ""
+    avatar: "",
+    roles: []
   };
 };
 
@@ -24,6 +25,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar;
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles;
   }
 };
 
@@ -60,11 +64,17 @@ const actions = {
             reject("Verification failed, please Login again.");
           }
 
-          const { login_name, avatar } = data;
+          const { role_id, login_name, avatar } = data;
 
+          const roles = String(role_id).split(",");
+          if (!roles || roles.length <= 0) {
+            reject("getInfo: roles must be a non-null array!");
+          }
+
+          commit("SET_ROLES", roles);
           commit("SET_NAME", login_name);
           commit("SET_AVATAR", avatar);
-          resolve(data);
+          resolve(response);
         })
         .catch(error => {
           reject(error);
