@@ -5,6 +5,7 @@
       v-model="currentVal"
       v-bind="bindProps"
       size="mini"
+      clearable
       v-on="bindEvents"
     />
 
