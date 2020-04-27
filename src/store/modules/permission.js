@@ -30,6 +30,10 @@ export function filterAsyncRoutes(routes) {
     } else {
       tmp.component = componentsMap[tmp.name];
     }
+
+    if (tmp.meta && tmp.meta.noCache !== true) {
+      tmp.meta.keepAlive = true;
+    }
     if (tmp.children) {
       tmp.children = filterAsyncRoutes(tmp.children);
     }
@@ -37,6 +41,45 @@ export function filterAsyncRoutes(routes) {
   });
 
   return res;
+}
+
+/**
+ * 将后台数据转化为树
+ * @param  routes
+ */
+export function treeMenu(routes) {
+  console.log(routes);
+  for (const route of routes) {
+    if (route.children) {
+      const routeChildren = route.children;
+      delete route.children;
+      const tmp = treeMenuSecond(routeChildren, route.meta.id);
+      route.children = tmp;
+    }
+  }
+  return routes;
+}
+
+/**
+ * 由于后台数据第一层有children,所以从第二层开始递归树
+ * @param {object} routes
+ * @param {Number} pid
+ */
+export function treeMenuSecond(routes, pid) {
+  const tmp = [];
+  for (const route of routes) {
+    let p = {};
+    if (route.meta.parent_id === pid) {
+      p = { ...route };
+      const children = treeMenuSecond(routes, route.meta.id);
+      if (children && children.length) {
+        p.children = children;
+      }
+      tmp.push(p);
+    }
+  }
+  // console.log(tmp, "tmp");
+  return tmp;
 }
 
 const state = {
@@ -58,6 +101,7 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, routes) {
     const accessedRoutes = filterAsyncRoutes(routes);
+    // accessedRoutes = treeMenu(accessedRoutes);
     return new Promise(resolve => {
       accessedRoutes.forEach(route => {
         asyncRoutes.push(route);

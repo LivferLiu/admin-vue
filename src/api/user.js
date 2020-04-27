@@ -7,7 +7,7 @@ export function login(data) {
     data
   });
 }
-
+// 获取登录用户信息
 export function getInfo(token) {
   return request({
     url: "/admin/adminUser/show",
@@ -15,9 +15,43 @@ export function getInfo(token) {
   });
 }
 
-export function logout() {
+// 用户列表
+export function adminUserIndex(params) {
   return request({
-    url: "/vue-admin-template/user/logout",
-    method: "post"
+    url: "/admin/adminUser/index",
+    method: "get",
+    params
+  });
+}
+
+// 创建用户
+export function createStaff(params) {
+  return request({
+    url: "admin/adminUser/store",
+    method: "post",
+    data: params
+  });
+}
+
+// 查看用户信息
+export function staffShow(id) {
+  return request({
+    url: "admin/adminUser/edit/" + id,
+    method: "get"
+  });
+}
+
+export function updateStaff(params) {
+  return request({
+    url: "admin/adminUser/update",
+    method: "post",
+    data: params
+  });
+}
+
+export function updateStatus(id) {
+  return request({
+    url: "admin/adminStatus/" + id,
+    method: "put"
   });
 }
