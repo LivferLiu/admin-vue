@@ -9,7 +9,7 @@
     />
     <div v-loading="loading" class="table-data">
       <el-table v-if="!loading" :data="tableData" border>
-        <el-table-column prop="package_id" label="包ID" />
+        <el-table-column prop="id" label="包ID" />
         <el-table-column prop="package_name" label="游戏名称" />
         <el-table-column prop="publish.full_name" label="发行商" />
         <el-table-column prop="game_version" label="版本号" />
@@ -19,14 +19,26 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template v-if="actionButton.row.status === 3" slot-scope="actionButton">
-            <router-link :to="{name:'ApplyName',query:{package_id:actionButton.row.package_id}}">
-              <el-button type="primary" size="mini">申请游戏</el-button>
+          <template
+            slot-scope="actionButton"
+          >
+            <el-button
+              v-show="actionButton.row.status === 3"
+              type="primary"
+              size="mini"
+              @click="applyGame(actionButton.row,actionButton.$index)"
+            >申请游戏</el-button>
+
+            <router-link
+              :to="{
+                name: 'CreateBagLink',
+                query: { package_id: actionButton.row.package_id }
+              }"
+            >
+              <el-button v-show="actionButton.row.status === 2" type="primary" size="mini">前往打包</el-button>
             </router-link>
-          </template>
-          <template v-else-if="actionButton.row.status === 2" slot-scope="actionButton">
-            <router-link :to="{name:'CreateBagLink',query:{package_id:actionButton.row.package_id}}" />
-            <el-button type="primary" size="mini">前往打包</el-button>
+
+            <el-button v-show="actionButton.row.status === 1" size="mini" disabled type="primary">申请中</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,7 +58,7 @@
 import searchItem from "@/components/search/search";
 import adminPage from "@/components/pagination/adminPagination";
 import config from "@/config/config";
-import { gameList } from "@/api/game";
+import { gameList, applyGame } from "@/api/game";
 
 export default {
   components: {
@@ -106,6 +118,22 @@ export default {
         this.loading = false;
       });
     },
+    applyGame(row, index) {
+      this.$confirm("确定申请此游戏吗?此操作无法撤回", "申请游戏", {
+        confirmButtonText: "申请",
+        cancelButtonText: "取消",
+        type: "info"
+      }).then(() => {
+        applyGame({ package_id: row.id }).then(response => {
+          this.tableData[index]["status"] = 1;
+        });
+      }).catch(() => {
+        this.$message({
+          message: "取消申请",
+          type: "info"
+        });
+      });
+    },
 
     onSearch(params) {
       this.initData(params);
@@ -122,6 +150,5 @@ export default {
       this.initData(this.$refs.searchRef.getSearchParams());
     }
   }
-
 };
 </script>

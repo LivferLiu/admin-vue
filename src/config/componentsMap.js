@@ -8,5 +8,7 @@ export default {
   StaffManage: () => import("@/views/staffManage/staffManage"),
   CreateStaff: () => import("@/views/staffManage/children/create"),
   EditStaff: () => import("@/views/staffManage/children/create"),
-  ZoneList: () => import("@/views/gameManage/zoneList")
+  ZoneList: () => import("@/views/gameManage/zoneList"),
+  BagLinkManage: () => import("@/views/gameManage/BagLinkManage/index"),
+  CreateBagLink: () => import("@/views/gameManage/BagLinkManage/createBagLink")
 };

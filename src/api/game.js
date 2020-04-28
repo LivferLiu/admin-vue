@@ -17,3 +17,11 @@ export function zoneList(params) {
     params
   });
 }
+
+export function applyGame(params) {
+  return request({
+    url: "admin/game/apply",
+    method: "post",
+    data: params
+  });
+}

@@ -141,7 +141,6 @@ export default {
       this.formData = obj;
       this.formData.limit = this.limit;
       this.formData.page = this.page;
-      console.log(this.formData);
     },
     getSearchParams() {
       return this.formData;
