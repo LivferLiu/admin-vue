@@ -32,6 +32,10 @@ import Layout from "@/layout";
  */
 export const constantRoutes = [
   {
+    path: "/",
+    redirect: "/gameManage/gameList"
+  },
+  {
     path: "/login",
     component: () => import("@/views/login/index"),
     hidden: true

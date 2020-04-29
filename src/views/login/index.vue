@@ -78,7 +78,7 @@ export default {
       },
       loading: false,
       passwordType: "password",
-      redirect: "/gameManage/gameList"
+      redirect: "#/gameManage/gameList"
     };
   },
   watch: {

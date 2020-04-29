@@ -2,12 +2,12 @@
   <div class="app-container">
     <el-form ref="createStaffRef" v-loading="loading" :rules="createRules" :model="createStaff" label-width="80px">
       <el-form-item label="员工名称" prop="username">
-        <el-input v-model="createStaff.username" :disabled="id" />
+        <el-input v-model="createStaff.username" :disabled="inputisDisabled" />
       </el-form-item>
 
       <el-form-item label="角色" prop="role_id">
-        <el-radio v-model="createStaff.role_id" label="2" :disabled="id">组长</el-radio>
-        <el-radio v-model="createStaff.role_id" label="3" :disabled="id">组员</el-radio>
+        <el-radio v-model="createStaff.role_id" label="2" :disabled="inputisDisabled">组长</el-radio>
+        <el-radio v-model="createStaff.role_id" label="3" :disabled="inputisDisabled">组员</el-radio>
       </el-form-item>
 
       <el-form-item label="所属小组" prop="group_id">
@@ -17,16 +17,15 @@
           :value="valueId"
           :clearable="isClearable"
           :accordion="isAccordion"
-          :model-options="createStaff.group_id"
           @getValue="getValue($event)"
         />
       </el-form-item>
 
       <el-form-item label="登录账号" prop="login_name">
-        <el-input v-model="createStaff.login_name" :disabled="id" />
+        <el-input v-model="createStaff.login_name" :disabled="inputisDisabled" />
       </el-form-item>
       <el-form-item label="手机号" prop="mobile">
-        <el-input v-model="createStaff.mobile" :disabled="id" />
+        <el-input v-model="createStaff.mobile" :disabled="inputisDisabled" />
       </el-form-item>
       <el-form-item
         label="登录密码"
@@ -93,7 +92,7 @@ export default {
         value: "id",
         label: "name",
         children: "child",
-        disabled: true
+        disabled: this.inputisDisabled
       }
     };
   },
@@ -103,6 +102,9 @@ export default {
     },
     showStaffInfo() {
       return this.createStaff;
+    },
+    inputisDisabled() {
+      return this.id > 0;
     }
   },
   watch: {

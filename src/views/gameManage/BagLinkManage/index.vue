@@ -9,14 +9,38 @@
     />
     <div v-loading="loading" class="table-data">
       <el-col class="table-action">
-        <router-link :to="{name:'CreateGroup'}">
+        <router-link :to="{ name: 'CreateBagLink' }">
           <el-button type="primary">添加包链</el-button>
         </router-link>
       </el-col>
       <el-table border :data="tableData">
         <el-table-column label="编号" prop="id" />
         <el-table-column label="游戏名称" prop="game_name" />
-        <el-table-column label="版本号" />
+        <el-table-column label="版本号" prop="game_version" />
+        <el-table-column label="下载地址" prop="subpackage_link" />
+        <el-table-column label="平台" prop="app_system" />
+        <el-table-column
+          label="打包状态"
+          prop="subpackage_status"
+          :formatter="packageStatus"
+        />
+        <el-table-column label="包链所属" prop="username" />
+        <el-table-column label="申请时间" prop="created_at" />
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini">复制链接</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="qrCode(scope.row.id)"
+            >[生成二维码]</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              @click="destroy(scope.row)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <admin-page
@@ -130,15 +154,19 @@ export default {
     },
     handleChange(value) {
       console.log(value);
+    },
+    packageStatus(row) {
+      const packageStatusDesc = ["申请中", "打包中", "已驳回", "分包失败", "打包成功"];
+      return packageStatusDesc[row.subpackage_status];
     }
   }
 };
 </script>
 
 <style lang="scss" scope>
-  .table-data {
-    .table-action{
-      padding-bottom: 1rem;
-    }
+.table-data {
+  .table-action {
+    padding-bottom: 1rem;
   }
+}
 </style>

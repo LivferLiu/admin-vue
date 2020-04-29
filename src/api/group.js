@@ -50,3 +50,10 @@ export function treeData() {
     method: "get"
   });
 }
+
+export function treeDataWithMembers() {
+  return request({
+    url: "admin/group/treeWithMembers",
+    method: "get"
+  });
+}

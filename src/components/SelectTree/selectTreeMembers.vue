@@ -16,6 +16,8 @@
         :node-key="props.value"
         :default-expanded-keys="defaultExpandedKey"
         :filter-node-method="filterNode"
+        :expand-on-click-node="false"
+        :render-content="renderContent"
         @node-click="handleNodeClick"
       />
     </el-option>
@@ -45,7 +47,7 @@ export default {
     },
     /* 初始值 */
     value: {
-      type: Number,
+      type: [Number, String],
       default: () => { return null; }
     },
     /* 可清空选项 */
@@ -72,7 +74,8 @@ export default {
       filterText: "",
       valueId: this.value, // 初始值
       valueTitle: "",
-      defaultExpandedKey: []
+      defaultExpandedKey: [],
+      userId: []
     };
   },
   watch: {
@@ -91,9 +94,13 @@ export default {
     // 初始化值
     initHandle() {
       if (this.valueId) {
-        const nodeData = this.$refs.selectTree.getNode(this.valueId).data;
-        this.valueTitle = nodeData[this.props.label]; // 初始化显示
-        this.$refs.selectTree.setCurrentKey(this.valueId); // 设置默认选中
+        const currentNode = this.$refs.selectTree.getNode(this.valueId);
+        const nodeData = currentNode.data;
+        // 只有第三级可以选择
+        if (currentNode.level === 3) {
+          this.valueTitle = nodeData[this.props.label]; // 初始化显示
+          this.$refs.selectTree.setCurrentKey(this.valueId); // 设置默认选中
+        }
         this.defaultExpandedKey = [this.valueId]; // 设置默认展开
       }
       this.initScroll();
@@ -111,7 +118,10 @@ export default {
     },
     // 切换选项
     handleNodeClick(node) {
-      this.valueTitle = node[this.props.label];
+      // 只有第三级可以选择
+      if (node.level === 3) {
+        this.valueTitle = node[this.props.label];
+      }
       this.valueId = node[this.props.value];
       this.$emit("getValue", this.valueId);
       this.defaultExpandedKey = [];
@@ -133,16 +143,34 @@ export default {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
-    append(node, ele) {
+    // 选择当前
+    clickNode(node) {
+      // 当前点击的元素
       const currentEl = this.$refs.selectTree.currentNode.$el;
-      const checkBoxEl = currentEl.querySelectorAll(".el-checkbox");
-      checkBoxEl.forEach(element => element.classList.add("is-checked"));
-      currentEl.querySelectorAll(".el-checkbox__input").forEach(element => element.classList.add("is-checked"));
-      console.log(checkBoxEl);
-      console.log(this.$refs.selectTree.currentNode);
+      // 当前点击的元素中的el-checbox
+      const checkBoxEl = currentEl.querySelector(".el-checkbox");
+      checkBoxEl.classList.toggle("is-checked");
+      // 当前元素 input
+      const checkInputEl = currentEl.querySelector(".el-checkbox__input");
+      checkInputEl.classList.toggle("is-checked");
+      // 只有这2个元素都添加is-checked 才会有样式
+      const checkUserId = node.data.id.substr(1);
+
+      if (checkBoxEl.classList.contains("is-checked") && checkInputEl.classList.contains("is-checked")) {
+        // 选中增加到userId数组中
+        this.userId.push(checkUserId);
+        this.$emit("pushValue", this.userId);
+      } else {
+        // 取消删除被取消的userId
+        this.userId.filter((element, index) => {
+          if (element === checkUserId) {
+            this.userId.splice(index, index + 1);
+          }
+        });
+        this.$emit("pushValue", this.userId);
+      }
     },
     renderContent(h, { node, data, store }) {
-      // console.log(node);
       if (node.level === 3) {
         return (
           <div>
@@ -150,10 +178,10 @@ export default {
             <label class='el-checkbox'>
               <span class='el-checkbox__input checkbox-padding'>
                 <span class='el-checkbox__inner'></span>
-                <input type='checkbox' aria-hidden='false' class='el-checkbox__original' value='' on-click={ () => this.append(node) }/>
+                <input type='checkbox' aria-hidden='false' class='el-checkbox__original' value='' on-click={ () => this.clickNode(node) }/>
               </span>
             </label>
-            <span class='custom-tree-node'>{node.label}~{node.level}</span>
+            <span class='custom-tree-node'>{node.label}</span>
           </div>
         );
       } else {
